@@ -21,6 +21,9 @@ public class PlayerMovementScript : MonoBehaviour
     public float dischargeMulti;
     public float rechargeMulti;
 
+
+    [SerializeField] Animator playerAnimator;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -31,6 +34,7 @@ public class PlayerMovementScript : MonoBehaviour
     {
         Jump();
         Sprint();
+        Slide();
     }
     private void FixedUpdate()
     {
@@ -45,6 +49,7 @@ public class PlayerMovementScript : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
+            playerAnimator.SetTrigger("IsJump");
             rb.AddForce(jump * jumpForce, ForceMode.Impulse);
             isGrounded = false;
         }
@@ -63,16 +68,29 @@ public class PlayerMovementScript : MonoBehaviour
             {
                 currentSprintEnergy -= 1 * dischargeMulti * Time.deltaTime;
                 moveSpeed = sprintSpeed;
+                playerAnimator.SetBool("IsSprint", true);
             }
         }
         else
         {
-
+            playerAnimator.SetBool("IsSprint", false);
             currentSprintEnergy += 1 * rechargeMulti * Time.deltaTime;
             if (currentSprintEnergy > spritEnergyAmount)
             {
                 currentSprintEnergy = spritEnergyAmount;
             }
+        }
+    }
+
+    void Slide()
+    {
+        if (Input.GetKey(KeyCode.E))
+        {
+            playerAnimator.SetTrigger("IsSlide");
+        }
+        else
+        {
+           playerAnimator.ResetTrigger("IsSlide"); 
         }
     }
 }
